@@ -18,8 +18,23 @@ function MovieForm() {
         rating: 0.0,
         ott_id: '',
         languages: []
-        // Add more fields as needed
+
     });
+
+    const [finalFormData, setFinalFormData] = useState({
+        id: '',
+        title: '',
+        poster_path: '',
+        ott_release_date: '',
+        ott_platform: '',
+        cbfc: '',
+        runtime: 0,
+        rating: 0.0,
+        ott_id: '',
+        languages: []
+    });
+
+    const allLanguages = ['Te', 'Hi', 'Ta', 'Kn', 'Ml', 'En'];
 
     const AHA = 'Aha';
     const HOTSTAR = 'Hotstar';
@@ -39,77 +54,54 @@ function MovieForm() {
     const ZEE5_REGEX = /zee5\.com/;
 
 
-    //let finalFormData = {};
-    // const [finalFormData, setFinalFormData] = useState({
-    //     id: 0,
-    //     title: '',
-    //     poster_path: '',
-    //     ott_release_date: '',
-    //     ott_platform: '',
-    //     cbfc: '',
-    //     runtime: 0,
-    //     rating: 0.0,
-    //     ott_id: '12345',
-    //     languages: []
-    //     // Add more fields as needed
-    // });
-    //const [finalFormData, setFinalFormData] = useState(null);
+    const [runtimehr, setRuntimehr] = useState('');
+    const [runtimemin, setRuntimemin] = useState('');
 
-    const [finalFormData, setFinalFormData] = useState({
-        id: '',
-        title: '',
-        poster_path: '',
-        ott_release_date: '',
-        ott_platform: '',
-        cbfc: '',
-        runtime: 0,
-        rating: 0.0,
-        ott_id: '',
-        languages: []
-    });
+    const handleHoursChange = (event) => {
+        const hrValue = event.target.value;
+        const minValue = runtimemin;
+        const result = Number(hrValue) * 60 + Number(minValue);
+        setFormData({ ...formData, 'runtime': result });
+        setRuntimehr(hrValue);
+
+    }
+
+    const handleMinutesChange = (event) => {
+        const hrValue = runtimehr;
+        const minValue = event.target.value;
+        const result = Number(hrValue) * 60 + Number(minValue);
+        setFormData({ ...formData, 'runtime': result });
+        setRuntimemin(minValue);
+    }
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
 
         if (type === 'checkbox') {
             // If it's a checkbox, update the array of selected values
-            if (checked) {
-                setFormData({ ...formData, [name]: [...formData[name], value.trim()] });
+            if (name === 'allLanguages') {
+
+                if (checked) {
+                    setFormData({ ...formData, languages: allLanguages });
+                } else {
+                    setFormData({ ...formData, languages: [] });
+                }
+
             } else {
-                // Remove the value if unchecked
-                setFormData({
-                    ...formData,
-                    [name]: formData[name].filter((item) => item !== value.trim()),
-                });
+                if (checked) {
+                    setFormData({ ...formData, [name]: [...formData[name], value.trim()] });
+                } else {
+                    // Remove the value if unchecked
+                    setFormData({
+                        ...formData,
+                        [name]: formData[name].filter((item) => item !== value.trim()),
+                    });
+                }
             }
         } else {
-            // For other input types, update as usual
-
-            // if(name === 'id'){
-            //     setFormData({ ...formData, [name]: Number(extractMovieId(value)) });
-            // }else{
             setFormData({ ...formData, [name]: value.trim() });
-            // }
         }
 
-        // switch (type) {
-        //     case 'checkbox':
-        //       if (checked) {
-        //         setFormData({ ...formData, [name]: [...formData[name], value] });
-        //       } else {
-        //         setFormData({
-        //           ...formData,
-        //           [name]: formData[name].filter((item) => item !== value),
-        //         });
-        //       }
-        //       break;
-        //     default:
-        //       setFormData({ ...formData, [name]: value });
-        //       break;
-        //   }
-
-
-        // setFormData({ ...formData, [name]: value });
     };
 
     const extractFilename = (url) => {
@@ -128,7 +120,7 @@ function MovieForm() {
     };
 
     const extractMovieId = (url) => {
-        // Check if 'name' is a URL ending with .jpg or .png
+
         if (url !== undefined) {
             if (/^[0-9]+$/.test(url)) {
                 return url;
@@ -145,19 +137,6 @@ function MovieForm() {
 
     function extractStringFromLastSlash(inputString, regex) {
 
-        // let regex;
-        // switch (platform) {
-        //     case AHA:
-        //         regex = /aha\.video/;
-        //         break;
-        //     case NETFLIX:
-        //         regex = /netflix\.com/;
-        //         break;
-        //     case SONYLIV:
-        //         regex = /sonyliv\.com/;
-        //         break;
-        // }
-
         if (regex.test(inputString)) {
             const lastSlashIndex = inputString.lastIndexOf('/');
             if (lastSlashIndex !== -1) {
@@ -169,7 +148,6 @@ function MovieForm() {
             console.log("URL is not valid.");
             return "URL is not valid.";
         }
-
 
     }
 
@@ -255,20 +233,9 @@ function MovieForm() {
         // Handle form submission, e.g., send data to an API
 
         const formCopied = { ...formData };
-        //setFinalFormData({...formData})
-        //const formCopy =  _.cloneDeep({...formData});
-        //setFinalFormData(formCopy)
-        //finalFormData = _.cloneDeep(formData);
-        //finalFormData = { ...formData }
 
-        //finalFormData = {...formData};
-        // finalFormData = JSON.parse(JSON.stringify(formData));
         formCopied.poster_path = extractFilename(formData.poster_path)
         formCopied.id = Number(extractMovieId(formData.id))
-        //setFinalFormData({ ...formData, poster_path: extractFilename(formData.poster_path) });
-
-        //setFinalFormData({ ...formData });
-
 
         switch (formData.ott_platform) {
 
@@ -276,7 +243,6 @@ function MovieForm() {
                 formCopied.ott_id = extractStringFromLastSlash(formData.ott_id, AHA_REGEX)
                 break;
             case HOTSTAR:
-                //setFinalFormData({ ...formData, ott_id: extractStringFromSecondToLastSlash(formData.ott_id) });
                 formCopied.ott_id = extractStringFromSecondToLastSlash(formData.ott_id, HOTSTAR_REGEX)
                 break;
             case NETFLIX:
@@ -448,9 +414,33 @@ function MovieForm() {
                             <br />
                             <Form.Group as={Row}  >
                                 <Form.Label column sm="3" >Runtime</Form.Label>
-                                <Col sm="9">
+                                <Col sm="2">
                                     <Form.Control
                                         type="number"
+                                        min='0'
+                                        max='12'
+                                        name="runtimehr"
+                                        placeholder="hr"
+                                        value={runtimehr}
+                                        onChange={handleHoursChange} />
+                                </Col>
+                                <Col sm="2">
+                                    <Form.Control
+                                        type="number"
+                                        min='0'
+                                        max='60'
+                                        name="runtimemin"
+                                        placeholder="min"
+                                        value={runtimemin}
+                                        onChange={handleMinutesChange} />
+                                </Col>
+                                <Col sm="2">
+                                <h4>=</h4>
+                                </Col>
+                                <Col sm="3">
+                                    <Form.Control
+                                        type="number"
+                                        min='0'
                                         name="runtime"
                                         placeholder="Runtime"
                                         value={formData.runtime}
@@ -460,10 +450,13 @@ function MovieForm() {
                             <br />
                             <Form.Group as={Row} >
                                 <Form.Label column sm="3" >Rating</Form.Label>
-                                <Col sm="9">
+                                <Col sm="3">
                                     <Form.Control
-                                        type="text"
+                                        type="number"
                                         name="rating"
+                                        step='0.1'
+                                        min='0.0'
+                                        max='10.0'
                                         placeholder="Rating"
                                         value={formData.rating}
                                         onChange={handleChange} />
@@ -534,6 +527,14 @@ function MovieForm() {
                                         value="En"
                                         checked={formData.languages.includes('En')}
                                         onChange={handleChange} />
+                                    <Form.Check
+                                        inline
+                                        label="All"
+                                        type="checkbox"
+                                        name="allLanguages"
+                                        checked={formData.languages.length === allLanguages.length}
+                                        onChange={handleChange}
+                                    />
                                 </Col>
                             </Form.Group>
                             <br />
@@ -545,7 +546,7 @@ function MovieForm() {
                     </div>
                     <div className="col-sm-2"></div>
                     <div className="col-sm-5" >
-                        <textarea readOnly value={JSON.stringify(finalFormData, replacer, 4)} cols="60" rows="19"></textarea>
+                        <textarea readOnly value={JSON.stringify(finalFormData, replacer,4)} cols="60" rows="25"></textarea>
                     </div>
                 </div>
             </Container>
