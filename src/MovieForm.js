@@ -20,6 +20,25 @@ function MovieForm() {
         languages: []
         // Add more fields as needed
     });
+
+    const AHA = 'Aha';
+    const HOTSTAR = 'Hotstar';
+    const NETFLIX = 'Netflix';
+    const PRIMEVIDEO = 'Prime Video';
+    const SONYLIV = 'Sony LIV';
+    const SUNNXT = 'Sun NXT';
+    const ZEE5 = 'ZEE5';
+
+
+    const AHA_REGEX = /aha\.video/;
+    const HOTSTAR_REGEX = /hotstar\.com/;
+    const NETFLIX_REGEX = /netflix\.com/;
+    const PRIMEVIDEO_REGEX = /primevideo\.com/;
+    const SONYLIV_REGEX = /sonyliv\.com/;
+    const SUNNXT_REGEX = /sunnxt\.com/;
+    const ZEE5_REGEX = /zee5\.com/;
+
+
     //let finalFormData = {};
     // const [finalFormData, setFinalFormData] = useState({
     //     id: 0,
@@ -124,66 +143,103 @@ function MovieForm() {
         return 'Invalid URL or extension';
     };
 
-    function extractStringFromLastSlash(inputString) {
-        const lastSlashIndex = inputString.lastIndexOf('/');
+    function extractStringFromLastSlash(inputString, regex) {
 
-        if (lastSlashIndex !== -1) {
-            return inputString.substring(lastSlashIndex + 1);
-        } else {
-            return inputString; // If there is no '/', return the original string
-        }
-    }
+        // let regex;
+        // switch (platform) {
+        //     case AHA:
+        //         regex = /aha\.video/;
+        //         break;
+        //     case NETFLIX:
+        //         regex = /netflix\.com/;
+        //         break;
+        //     case SONYLIV:
+        //         regex = /sonyliv\.com/;
+        //         break;
+        // }
 
-    function extractStringFromSecondToLastSlash(inputString) {
-        const lastSlashIndex = inputString.lastIndexOf('/');
-
-        if (lastSlashIndex !== -1) {
-            const secondToLastSlashIndex = inputString.lastIndexOf('/', lastSlashIndex - 1);
-
-            if (secondToLastSlashIndex !== -1) {
-                return inputString.substring(secondToLastSlashIndex + 1);
+        if (regex.test(inputString)) {
+            const lastSlashIndex = inputString.lastIndexOf('/');
+            if (lastSlashIndex !== -1) {
+                return inputString.substring(lastSlashIndex + 1);
+            } else {
+                return inputString; // If there is no '/', return the original string
             }
+        } else {
+            console.log("URL is not valid.");
+            return "URL is not valid.";
         }
 
-        return inputString; // Return the original string if there is no second-to-last '/'
+
     }
 
-    function extractStringFromThirdToLastSlash(inputString) {
-        const lastSlashIndex = inputString.lastIndexOf('/');
+    function extractStringFromSecondToLastSlash(inputString, regex) {
 
-        if (lastSlashIndex !== -1) {
-            const secondToLastSlashIndex = inputString.lastIndexOf('/', lastSlashIndex - 1);
+        if (regex.test(inputString)) {
+            const lastSlashIndex = inputString.lastIndexOf('/');
 
-            if (secondToLastSlashIndex !== -1) {
-                const thirdToLastSlashIndex = inputString.lastIndexOf('/', secondToLastSlashIndex - 1);
+            if (lastSlashIndex !== -1) {
+                const secondToLastSlashIndex = inputString.lastIndexOf('/', lastSlashIndex - 1);
 
-                if (thirdToLastSlashIndex !== -1) {
-                    return inputString.substring(thirdToLastSlashIndex + 1);
+                if (secondToLastSlashIndex !== -1) {
+                    return inputString.substring(secondToLastSlashIndex + 1);
                 }
             }
-
+            return inputString; // Return the original string if there is no second-to-last '/'
+        } else {
+            console.log("URL is not valid.");
+            return "URL is not valid.";
         }
-
-        return inputString; // Return the original string if there is no second-to-last '/'
     }
 
-    function extractStringFromLastEqualTo(inputString) {
+    function extractStringFromThirdToLastSlash(inputString, regex) {
 
-        const regex = /gti=([^&]+)/;
-        const match = inputString.match(regex);
+        if (regex.test(inputString)) {
+            const lastSlashIndex = inputString.lastIndexOf('/');
 
-        if (match) {
-            // match[1] contains the extracted letters
-            return match[1];
-        }
+            if (lastSlashIndex !== -1) {
+                const secondToLastSlashIndex = inputString.lastIndexOf('/', lastSlashIndex - 1);
 
-        const lastEqualToIndex = inputString.lastIndexOf('=');
+                if (secondToLastSlashIndex !== -1) {
+                    const thirdToLastSlashIndex = inputString.lastIndexOf('/', secondToLastSlashIndex - 1);
 
-        if (lastEqualToIndex !== -1) {
-            return inputString.substring(lastEqualToIndex + 1);
+                    if (thirdToLastSlashIndex !== -1) {
+                        return inputString.substring(thirdToLastSlashIndex + 1);
+                    }
+                }
+
+            }
+            return inputString; // Return the original string if there is no second-to-last '/'
         } else {
-            return inputString; // If there is no '=', return the original string
+            console.log("URL is not valid.");
+            return "URL is not valid.";
         }
+    }
+
+    function extractStringFromLastEqualTo(inputString, regex) {
+
+        if (regex.test(inputString)) {
+            const idRegex = /gti=([^&]+)/;
+            const match = inputString.match(idRegex);
+
+            if (match) {
+                // match[1] contains the extracted letters
+                return match[1];
+            }
+
+            const lastEqualToIndex = inputString.lastIndexOf('=');
+
+            if (lastEqualToIndex !== -1) {
+                return inputString.substring(lastEqualToIndex + 1);
+            } else {
+                return inputString; // If there is no '=', return the original string
+            }
+
+        } else {
+            console.log("URL is not valid.");
+            return "URL is not valid.";
+        }
+
     }
     function replacer(key, value) {
         // Filtering out properties
@@ -216,27 +272,27 @@ function MovieForm() {
 
         switch (formData.ott_platform) {
 
-            case 'Aha':
-                formCopied.ott_id = extractStringFromLastSlash(formData.ott_id)
+            case AHA:
+                formCopied.ott_id = extractStringFromLastSlash(formData.ott_id, AHA_REGEX)
                 break;
-            case 'Hotstar':
+            case HOTSTAR:
                 //setFinalFormData({ ...formData, ott_id: extractStringFromSecondToLastSlash(formData.ott_id) });
-                formCopied.ott_id = extractStringFromSecondToLastSlash(formData.ott_id)
+                formCopied.ott_id = extractStringFromSecondToLastSlash(formData.ott_id, HOTSTAR_REGEX)
                 break;
-            case 'Netflix':
-                formCopied.ott_id = extractStringFromLastSlash(formData.ott_id)
+            case NETFLIX:
+                formCopied.ott_id = extractStringFromLastSlash(formData.ott_id, NETFLIX_REGEX)
                 break;
-            case 'Prime Video':
-                formCopied.ott_id = extractStringFromLastEqualTo(formData.ott_id)
+            case PRIMEVIDEO:
+                formCopied.ott_id = extractStringFromLastEqualTo(formData.ott_id, PRIMEVIDEO_REGEX)
                 break;
-            case 'Sony LIV':
-                formCopied.ott_id = extractStringFromLastSlash(formData.ott_id)
+            case SONYLIV:
+                formCopied.ott_id = extractStringFromLastSlash(formData.ott_id, SONYLIV_REGEX)
                 break;
-            case 'Sun NXT':
-                formCopied.ott_id = extractStringFromThirdToLastSlash(formData.ott_id)
+            case SUNNXT:
+                formCopied.ott_id = extractStringFromThirdToLastSlash(formData.ott_id, SUNNXT_REGEX)
                 break;
-            case 'ZEE5':
-                formCopied.ott_id = extractStringFromSecondToLastSlash(formData.ott_id)
+            case ZEE5:
+                formCopied.ott_id = extractStringFromSecondToLastSlash(formData.ott_id, ZEE5_REGEX)
                 break;
             default:
                 formCopied.ott_id = formData.ott_id
@@ -316,49 +372,49 @@ function MovieForm() {
                                         label="Aha"
                                         type="radio"
                                         name="ott_platform"
-                                        value="Aha"
+                                        value={AHA}
                                         onChange={handleChange} />
                                     <Form.Check
                                         inline
                                         label="Hotstar"
                                         type="radio"
                                         name="ott_platform"
-                                        value="Hotstar"
+                                        value={HOTSTAR}
                                         onChange={handleChange} />
                                     <Form.Check
                                         inline
                                         label="Netflix"
                                         type="radio"
                                         name="ott_platform"
-                                        value="Netflix"
+                                        value={NETFLIX}
                                         onChange={handleChange} />
                                     <Form.Check
                                         inline
                                         label="Prime Video"
                                         type="radio"
                                         name="ott_platform"
-                                        value="Prime Video"
+                                        value={PRIMEVIDEO}
                                         onChange={handleChange} />
                                     <Form.Check
                                         inline
                                         label="Sony LIV"
                                         type="radio"
                                         name="ott_platform"
-                                        value="Sony LIV"
+                                        value={SONYLIV}
                                         onChange={handleChange} />
                                     <Form.Check
                                         inline
                                         label="Sun NXT"
                                         type="radio"
                                         name="ott_platform"
-                                        value="Sun NXT"
+                                        value={SUNNXT}
                                         onChange={handleChange} />
                                     <Form.Check
                                         inline
                                         label="ZEE5"
                                         type="radio"
                                         name="ott_platform"
-                                        value="ZEE5"
+                                        value={ZEE5}
                                         onChange={handleChange} />
                                 </Col>
                             </Form.Group>
