@@ -121,7 +121,7 @@ function MovieForm() {
 
     const extractMovieId = (url) => {
 
-        if (url !== undefined) {
+        if (url !== '') {
             if (/^[0-9]+$/.test(url)) {
                 return url;
             }
@@ -219,8 +219,8 @@ function MovieForm() {
         }
 
     }
+
     function replacer(key, value) {
-        // Filtering out properties
         if (key === 'id' || key === 'runtime')
             value = Number(value)
         if (key === 'rating')
@@ -231,7 +231,6 @@ function MovieForm() {
     const handleSubmit = (e) => {
         e.preventDefault();
         // Handle form submission, e.g., send data to an API
-
         const formCopied = { ...formData };
 
         formCopied.poster_path = extractFilename(formData.poster_path)
@@ -457,8 +456,7 @@ function MovieForm() {
                                         step='0.1'
                                         min='0.0'
                                         max='10.0'
-                                        placeholder="Rating"
-                                        value={formData.rating}
+                                        placeholder="0.0"
                                         onChange={handleChange} />
                                 </Col>
                             </Form.Group>
