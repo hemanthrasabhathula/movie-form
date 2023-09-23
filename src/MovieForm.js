@@ -284,6 +284,7 @@ function MovieForm() {
                                 <Form.Label column sm="3">Id</Form.Label>
                                 <Col sm="9">
                                     <Form.Control
+                                        required
                                         type="text"
                                         name="id"
                                         placeholder="Id"
@@ -296,6 +297,7 @@ function MovieForm() {
                                 <Form.Label column sm="3">Title</Form.Label>
                                 <Col sm="9">
                                     <Form.Control
+                                        required
                                         type="text"
                                         name="title"
                                         placeholder="Title"
@@ -308,6 +310,7 @@ function MovieForm() {
                                 <Form.Label column sm="3">PosterPath</Form.Label>
                                 <Col sm="9">
                                     <Form.Control
+                                        required
                                         type="text"
                                         name="poster_path"
                                         placeholder="PosterPath"
@@ -321,6 +324,7 @@ function MovieForm() {
                                 <Form.Label column sm="3">OTTReleaseDate</Form.Label>
                                 <Col sm="9">
                                     <Form.Control
+                                        required
                                         type="date"
                                         name="ott_release_date"
                                         placeholder="OTTReleaseDate"
@@ -333,6 +337,7 @@ function MovieForm() {
                                 <Form.Label column sm="3">OTTPlatform </Form.Label>
                                 <Col sm="9">
                                     <Form.Check
+                                        required
                                         inline
                                         label="Aha"
                                         type="radio"
@@ -388,6 +393,7 @@ function MovieForm() {
                                 <Form.Label column sm="3" >CBFC</Form.Label>
                                 <Col sm="9">
                                     <Form.Check
+                                        required
                                         inline
                                         label="U/A"
                                         type="radio"
@@ -438,6 +444,7 @@ function MovieForm() {
                                 </Col>
                                 <Col sm="3">
                                     <Form.Control
+                                        required
                                         type="number"
                                         min='0'
                                         name="runtime"
@@ -451,6 +458,7 @@ function MovieForm() {
                                 <Form.Label column sm="3" >Rating</Form.Label>
                                 <Col sm="3">
                                     <Form.Control
+                                        
                                         type="number"
                                         name="rating"
                                         step='0.1'
@@ -465,6 +473,7 @@ function MovieForm() {
                                 <Form.Label column sm="3" >OTTId</Form.Label>
                                 <Col sm="9">
                                     <Form.Control
+                                        required
                                         type="text"
                                         name="ott_id"
                                         placeholder="OTTId"
@@ -518,6 +527,7 @@ function MovieForm() {
                                         checked={formData.languages.includes('Ml')}
                                         onChange={handleChange} />
                                     <Form.Check
+                                        
                                         inline
                                         label="English"
                                         type="checkbox"
