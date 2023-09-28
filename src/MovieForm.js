@@ -5,8 +5,11 @@ import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Button from 'react-bootstrap/Button';
 import './MovieForm.css';
+import MovieFormService from './MovieFormService';
+import * as constants from './Constants';
 
 function MovieForm() {
+    const movieFormService = new MovieFormService();
     const [formData, setFormData] = useState({
         id: '',
         title: '',
@@ -34,31 +37,13 @@ function MovieForm() {
         languages: []
     });
 
-    const allLanguages = ['Te', 'Hi', 'Ta', 'Kn', 'Ml', 'En'];
-
-    const AHA = 'Aha';
-    const HOTSTAR = 'Hotstar';
-    const NETFLIX = 'Netflix';
-    const PRIMEVIDEO = 'Prime Video';
-    const SONYLIV = 'Sony LIV';
-    const SUNNXT = 'Sun NXT';
-    const ZEE5 = 'ZEE5';
-
-
-    const AHA_REGEX = /aha\.video/;
-    const HOTSTAR_REGEX = /hotstar\.com/;
-    const NETFLIX_REGEX = /netflix\.com/;
-    const PRIMEVIDEO_REGEX = /primevideo\.com/;
-    const SONYLIV_REGEX = /sonyliv\.com/;
-    const SUNNXT_REGEX = /sunnxt\.com/;
-    const ZEE5_REGEX = /zee5\.com/;
-
 
     const [runtimehr, setRuntimehr] = useState('');
     const [runtimemin, setRuntimemin] = useState('');
 
     const handleHoursChange = (event) => {
-        const hrValue = event.target.value;
+
+        const hrValue = event.target.value > 12 ? 0 : event.target.value;
         const minValue = runtimemin;
         const result = Number(hrValue) * 60 + Number(minValue);
         setFormData({ ...formData, 'runtime': result });
@@ -68,11 +53,12 @@ function MovieForm() {
 
     const handleMinutesChange = (event) => {
         const hrValue = runtimehr;
-        const minValue = event.target.value;
+        const minValue = event.target.value > 60 ? 0 : event.target.value;
         const result = Number(hrValue) * 60 + Number(minValue);
         setFormData({ ...formData, 'runtime': result });
         setRuntimemin(minValue);
     }
+
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -82,7 +68,7 @@ function MovieForm() {
             if (name === 'allLanguages') {
 
                 if (checked) {
-                    setFormData({ ...formData, languages: allLanguages });
+                    setFormData({ ...formData, languages: constants.allLanguages });
                 } else {
                     setFormData({ ...formData, languages: [] });
                 }
@@ -99,170 +85,26 @@ function MovieForm() {
                 }
             }
         } else {
-            setFormData({ ...formData, [name]: value.trim() });
-        }
 
-    };
-
-    const extractFilename = (url) => {
-        // Check if 'name' is a URL ending with .jpg or .png
-        if (url !== undefined) {
-            if (url.endsWith('.jpg') || url.endsWith('.png')) {
-                // Use regular expressions to extract the filename
-                const matches = url.match(/\/([^/]+)\.(jpg|png)$/);
-                if (matches && matches.length === 3) {
-                    const filename = matches[0]; // Extracted filename
-                    return filename;
-                }
-            }
-        }
-        return 'Invalid URL or extension';
-    };
-
-    const extractMovieId = (url) => {
-
-        if (url !== '') {
-            if (/^[0-9]+$/.test(url)) {
-                return url;
-            }
-            const numbersArray = url.match(/\/(\d+)(?:[^\d]|$)/);
-            if (numbersArray) {
-                // Extracted numbers will contain '/' at the beginning, so we need to remove it
-                const cleanedNumbersArray = numbersArray[1]
-                return cleanedNumbersArray;
-            }
-        }
-        return 'Invalid URL or extension';
-    };
-
-    function extractStringFromLastSlash(inputString, regex) {
-
-        if (regex.test(inputString)) {
-            const lastSlashIndex = inputString.lastIndexOf('/');
-            if (lastSlashIndex !== -1) {
-                return inputString.substring(lastSlashIndex + 1);
+            if (name === 'ott_id') {
+                setFormData({ ...formData, ott_platform: movieFormService.getottPlatformVal(value.trim()), [name]: value.trim() });
+                //handleOttIdChange(e);
             } else {
-                return inputString; // If there is no '/', return the original string
+                setFormData({ ...formData, [name]: value.trim() });
             }
-        } else {
-            console.log("URL is not valid.");
-            return "URL is not valid.";
         }
 
-    }
+    };
 
-    function extractStringFromSecondToLastSlash(inputString, regex) {
-
-        if (regex.test(inputString)) {
-            const lastSlashIndex = inputString.lastIndexOf('/');
-
-            if (lastSlashIndex !== -1) {
-                const secondToLastSlashIndex = inputString.lastIndexOf('/', lastSlashIndex - 1);
-
-                if (secondToLastSlashIndex !== -1) {
-                    return inputString.substring(secondToLastSlashIndex + 1);
-                }
-            }
-            return inputString; // Return the original string if there is no second-to-last '/'
-        } else {
-            console.log("URL is not valid.");
-            return "URL is not valid.";
-        }
-    }
-
-    function extractStringFromThirdToLastSlash(inputString, regex) {
-
-        if (regex.test(inputString)) {
-            const lastSlashIndex = inputString.lastIndexOf('/');
-
-            if (lastSlashIndex !== -1) {
-                const secondToLastSlashIndex = inputString.lastIndexOf('/', lastSlashIndex - 1);
-
-                if (secondToLastSlashIndex !== -1) {
-                    const thirdToLastSlashIndex = inputString.lastIndexOf('/', secondToLastSlashIndex - 1);
-
-                    if (thirdToLastSlashIndex !== -1) {
-                        return inputString.substring(thirdToLastSlashIndex + 1);
-                    }
-                }
-
-            }
-            return inputString; // Return the original string if there is no second-to-last '/'
-        } else {
-            console.log("URL is not valid.");
-            return "URL is not valid.";
-        }
-    }
-
-    function extractStringFromLastEqualTo(inputString, regex) {
-
-        if (regex.test(inputString)) {
-            const idRegex = /gti=([^&]+)/;
-            const match = inputString.match(idRegex);
-
-            if (match) {
-                // match[1] contains the extracted letters
-                return match[1];
-            }
-
-            const lastEqualToIndex = inputString.lastIndexOf('=');
-
-            if (lastEqualToIndex !== -1) {
-                return inputString.substring(lastEqualToIndex + 1);
-            } else {
-                return inputString; // If there is no '=', return the original string
-            }
-
-        } else {
-            console.log("URL is not valid.");
-            return "URL is not valid.";
-        }
-
-    }
-
-    function replacer(key, value) {
-        if (key === 'id' || key === 'runtime')
-            value = Number(value)
-        if (key === 'rating')
-            value = parseFloat(value)
-        return value
-    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
         // Handle form submission, e.g., send data to an API
         const formCopied = { ...formData };
 
-        formCopied.poster_path = extractFilename(formData.poster_path)
-        formCopied.id = Number(extractMovieId(formData.id))
-
-        switch (formData.ott_platform) {
-
-            case AHA:
-                formCopied.ott_id = extractStringFromLastSlash(formData.ott_id, AHA_REGEX)
-                break;
-            case HOTSTAR:
-                formCopied.ott_id = extractStringFromSecondToLastSlash(formData.ott_id, HOTSTAR_REGEX)
-                break;
-            case NETFLIX:
-                formCopied.ott_id = extractStringFromLastSlash(formData.ott_id, NETFLIX_REGEX)
-                break;
-            case PRIMEVIDEO:
-                formCopied.ott_id = extractStringFromLastEqualTo(formData.ott_id, PRIMEVIDEO_REGEX)
-                break;
-            case SONYLIV:
-                formCopied.ott_id = extractStringFromLastSlash(formData.ott_id, SONYLIV_REGEX)
-                break;
-            case SUNNXT:
-                formCopied.ott_id = extractStringFromThirdToLastSlash(formData.ott_id, SUNNXT_REGEX)
-                break;
-            case ZEE5:
-                formCopied.ott_id = extractStringFromSecondToLastSlash(formData.ott_id, ZEE5_REGEX)
-                break;
-            default:
-                formCopied.ott_id = formData.ott_id
-
-        }
+        formCopied.poster_path = movieFormService.extractFilename(formData.poster_path)
+        formCopied.id = Number(movieFormService.extractMovieId(formData.id))
+        formCopied.ott_id = movieFormService.getFormattedOttId(formData.ott_platform, formData.ott_id);
 
         setFinalFormData(formCopied);
         console.log(JSON.stringify(formCopied));
@@ -275,7 +117,7 @@ function MovieForm() {
     return (
         <div>
             <Container >
-                <h1 as={Row} >Movie-Form</h1>
+                <h1 as={Row} > {formData.title === '' ? 'Movie-Form' : formData.title}</h1>
                 <div className="row">
                     <div className="col-sm-5" >
 
@@ -342,49 +184,56 @@ function MovieForm() {
                                         label="Aha"
                                         type="radio"
                                         name="ott_platform"
-                                        value={AHA}
+                                        value={constants.AHA}
+                                        checked={formData.ott_platform === constants.AHA}
                                         onChange={handleChange} />
                                     <Form.Check
                                         inline
                                         label="Hotstar"
                                         type="radio"
                                         name="ott_platform"
-                                        value={HOTSTAR}
+                                        value={constants.HOTSTAR}
+                                        checked={formData.ott_platform === constants.HOTSTAR}
                                         onChange={handleChange} />
                                     <Form.Check
                                         inline
                                         label="Netflix"
                                         type="radio"
                                         name="ott_platform"
-                                        value={NETFLIX}
+                                        value={constants.NETFLIX}
+                                        checked={formData.ott_platform === constants.NETFLIX}
                                         onChange={handleChange} />
                                     <Form.Check
                                         inline
                                         label="Prime Video"
                                         type="radio"
                                         name="ott_platform"
-                                        value={PRIMEVIDEO}
+                                        value={constants.PRIMEVIDEO}
+                                        checked={formData.ott_platform === constants.PRIMEVIDEO}
                                         onChange={handleChange} />
                                     <Form.Check
                                         inline
                                         label="Sony LIV"
                                         type="radio"
                                         name="ott_platform"
-                                        value={SONYLIV}
+                                        value={constants.SONYLIV}
+                                        checked={formData.ott_platform === constants.SONYLIV}
                                         onChange={handleChange} />
                                     <Form.Check
                                         inline
                                         label="Sun NXT"
                                         type="radio"
                                         name="ott_platform"
-                                        value={SUNNXT}
+                                        value={constants.SUNNXT}
+                                        checked={formData.ott_platform === constants.SUNNXT}
                                         onChange={handleChange} />
                                     <Form.Check
                                         inline
                                         label="ZEE5"
                                         type="radio"
                                         name="ott_platform"
-                                        value={ZEE5}
+                                        value={constants.ZEE5}
+                                        checked={formData.ott_platform === constants.ZEE5}
                                         onChange={handleChange} />
                                 </Col>
                             </Form.Group>
@@ -440,7 +289,7 @@ function MovieForm() {
                                         onChange={handleMinutesChange} />
                                 </Col>
                                 <Col sm="2">
-                                <h4>=</h4>
+                                    <h4>=</h4>
                                 </Col>
                                 <Col sm="3">
                                     <Form.Control
@@ -458,7 +307,7 @@ function MovieForm() {
                                 <Form.Label column sm="3" >Rating</Form.Label>
                                 <Col sm="3">
                                     <Form.Control
-                                        
+
                                         type="number"
                                         name="rating"
                                         step='0.1'
@@ -527,7 +376,7 @@ function MovieForm() {
                                         checked={formData.languages.includes('Ml')}
                                         onChange={handleChange} />
                                     <Form.Check
-                                        
+
                                         inline
                                         label="English"
                                         type="checkbox"
@@ -540,7 +389,7 @@ function MovieForm() {
                                         label="All"
                                         type="checkbox"
                                         name="allLanguages"
-                                        checked={formData.languages.length === allLanguages.length}
+                                        checked={formData.languages.length === constants.allLanguages.length}
                                         onChange={handleChange}
                                     />
                                 </Col>
@@ -554,7 +403,7 @@ function MovieForm() {
                     </div>
                     <div className="col-sm-2"></div>
                     <div className="col-sm-5" >
-                        <textarea readOnly value={JSON.stringify(finalFormData, replacer,4)} cols="60" rows="25"></textarea>
+                        <textarea readOnly value={JSON.stringify(finalFormData, movieFormService.replacer, 4)} cols="60" rows="25"></textarea>
                     </div>
                 </div>
             </Container>
