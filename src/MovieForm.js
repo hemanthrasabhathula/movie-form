@@ -148,7 +148,7 @@ function MovieForm() {
 
     const handleTextareaFocus = () => {
 
-        if (JSON.stringify(formData) !== JSON.stringify(initialFormData.formData)) {
+        if (JSON.stringify(finalFormData) !== JSON.stringify(initialFormData.formData)) {
             // Select the text inside the textarea
             textareaRef.current.select();
             // Use the Clipboard API to copy the selected text to clipboard
