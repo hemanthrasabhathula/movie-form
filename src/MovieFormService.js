@@ -3,9 +3,9 @@ class MovieFormService {
 
     replacer(key, value) {
         if (key === 'id' || key === 'runtime')
-            value = Number(value)
+            value = value === '' ? value : Number(value)
         if (key === 'rating')
-            value = parseFloat(value)
+            value = value === '' ? value : parseFloat(value)
         return value
     }
 

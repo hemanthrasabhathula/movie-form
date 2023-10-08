@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col'
@@ -11,18 +11,34 @@ import * as constants from './Constants';
 function MovieForm() {
     const movieFormService = new MovieFormService();
     const [formData, setFormData] = useState({
+
         id: '',
         title: '',
         poster_path: '',
         ott_release_date: '',
         ott_platform: '',
         cbfc: '',
-        runtime: 0,
-        rating: 0.0,
+        runtime: '',
+        rating: '',
         ott_id: '',
         languages: []
 
     });
+
+    const initialFormData = {
+        formData: {
+            id: '',
+            title: '',
+            poster_path: '',
+            ott_release_date: '',
+            ott_platform: '',
+            cbfc: '',
+            runtime: '',
+            rating: '',
+            ott_id: '',
+            languages: []
+        }
+    }
 
     const [finalFormData, setFinalFormData] = useState({
         id: '',
@@ -31,8 +47,8 @@ function MovieForm() {
         ott_release_date: '',
         ott_platform: '',
         cbfc: '',
-        runtime: 0,
-        rating: 0.0,
+        runtime: '',
+        rating: '',
         ott_id: '',
         languages: []
     });
@@ -111,17 +127,48 @@ function MovieForm() {
 
     };
 
+    const handleReset = (e) => {
+        e.preventDefault();
+        setFormData(initialFormData.formData);
+        setRuntimehr(initialFormData.formData.runtime);
+        setRuntimemin(initialFormData.formData.runtime);
+        setFinalFormData(initialFormData.formData);
+    };
 
+    const textareaRef = useRef(null);
 
+    useEffect(() => {
+
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            const calculatedHeight = textareaRef.current.scrollHeight;
+            textareaRef.current.style.height = `${calculatedHeight}px`;
+        }
+    }, [finalFormData]);
+
+    const handleTextareaFocus = () => {
+
+        if (JSON.stringify(formData) !== JSON.stringify(initialFormData.formData)) {
+            // Select the text inside the textarea
+            textareaRef.current.select();
+            // Use the Clipboard API to copy the selected text to clipboard
+            navigator.clipboard.writeText(textareaRef.current.value).then(() => {
+                console.log('Text successfully copied to clipboard');
+            }).catch((err) => {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+    };
 
     return (
         <div>
             <Container >
                 <h1 as={Row} > {formData.title === '' ? 'Movie-Form' : formData.title}</h1>
-                <div className="row">
-                    <div className="col-sm-5" >
+                <Form onSubmit={handleSubmit} style={{ padding: "10px" }}>
+                    <div className="row">
+                        <div className="col-sm-5" >
 
-                        <Form onSubmit={handleSubmit}>
+
                             <Form.Group as={Row}>
                                 <Form.Label column sm="3">Id</Form.Label>
                                 <Col sm="9">
@@ -149,13 +196,13 @@ function MovieForm() {
                             </Form.Group>
                             <br />
                             <Form.Group as={Row}>
-                                <Form.Label column sm="3">PosterPath</Form.Label>
+                                <Form.Label column sm="3">Poster Path</Form.Label>
                                 <Col sm="9">
                                     <Form.Control
                                         required
                                         type="text"
                                         name="poster_path"
-                                        placeholder="PosterPath"
+                                        placeholder="Poster Path"
                                         value={formData.poster_path}
                                         onChange={handleChange} />
                                 </Col>
@@ -163,7 +210,7 @@ function MovieForm() {
                             <br />
                             {/* {finalFormData && <p>Extracted Filename: {finalFormData.poster_path}</p>} */}
                             <Form.Group as={Row} >
-                                <Form.Label column sm="3">OTTReleaseDate</Form.Label>
+                                <Form.Label column sm="3">Release Date</Form.Label>
                                 <Col sm="9">
                                     <Form.Control
                                         required
@@ -176,7 +223,7 @@ function MovieForm() {
                             </Form.Group>
                             <br />
                             <Form.Group as={Row} >
-                                <Form.Label column sm="3">OTTPlatform </Form.Label>
+                                <Form.Label column sm="3">Platform</Form.Label>
                                 <Col sm="9">
                                     <Form.Check
                                         required
@@ -239,7 +286,7 @@ function MovieForm() {
                             </Form.Group>
                             <br />
                             <Form.Group as={Row}>
-                                <Form.Label column sm="3" >CBFC</Form.Label>
+                                <Form.Label column sm="3" >Cbfc</Form.Label>
                                 <Col sm="9">
                                     <Form.Check
                                         required
@@ -248,6 +295,7 @@ function MovieForm() {
                                         type="radio"
                                         name="cbfc"
                                         value="U/A"
+                                        checked={formData.cbfc === "U/A"}
                                         onChange={handleChange} />
                                     <Form.Check
                                         inline
@@ -255,6 +303,7 @@ function MovieForm() {
                                         type="radio"
                                         name="cbfc"
                                         value="U"
+                                        checked={formData.cbfc === "U"}
                                         onChange={handleChange} />
                                     <Form.Check
                                         inline
@@ -262,6 +311,7 @@ function MovieForm() {
                                         type="radio"
                                         name="cbfc"
                                         value="A"
+                                        checked={formData.cbfc === "A"}
                                         onChange={handleChange} />
                                 </Col>
                             </Form.Group>
@@ -307,25 +357,25 @@ function MovieForm() {
                                 <Form.Label column sm="3" >Rating</Form.Label>
                                 <Col sm="3">
                                     <Form.Control
-
                                         type="number"
                                         name="rating"
                                         step='0.1'
                                         min='0.0'
                                         max='10.0'
                                         placeholder="0.0"
+                                        value={formData.rating}
                                         onChange={handleChange} />
                                 </Col>
                             </Form.Group>
                             <br />
                             <Form.Group as={Row} >
-                                <Form.Label column sm="3" >OTTId</Form.Label>
+                                <Form.Label column sm="3" >OTT Id</Form.Label>
                                 <Col sm="9">
                                     <Form.Control
                                         required
                                         type="text"
                                         name="ott_id"
-                                        placeholder="OTTId"
+                                        placeholder="OTT Id"
                                         value={formData.ott_id}
                                         onChange={handleChange} />
                                 </Col>
@@ -333,7 +383,7 @@ function MovieForm() {
                             <br />
                             {/* {finalFormData && <p>{finalFormData.ott_id}</p>} */}
                             <Form.Group as={Row}>
-                                <Form.Label column sm="3">Languages: </Form.Label>
+                                <Form.Label column sm="3">Languages </Form.Label>
                                 <Col sm="9">
                                     <Form.Check
                                         inline
@@ -394,18 +444,39 @@ function MovieForm() {
                                     />
                                 </Col>
                             </Form.Group>
-                            <br />
-                            <Button className="col-md-12" variant="primary" type="submit">
-                                Submit
-                            </Button>
+                        </div>
+                        <div className="col-sm-2 d-flex flex-column justify-content-center align-items-center" >
+                            <div className='w-100 mb-2'>
+                                <div className="row justify-content-center">
+                                    <Button style={{ width: "80%", marginBottom: "10px" }} variant="warning" type="reset" onClick={handleReset}>
+                                        Reset
+                                    </Button>
+                                </div>
 
-                        </Form>
+                                <div className="row justify-content-center">
+                                    <Button style={{ width: "80%", marginBottom: "10px" }} variant="primary" type="submit">
+                                        Submit
+                                    </Button>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div className="col-sm-5  d-flex flex-column justify-content-center align-items-center" >
+                            <textarea
+                                ref={textareaRef}
+                                style={{
+                                    padding: "10px",
+                                    border: "1px solid #ccc",
+                                    overflowY: "hidden",
+                                    minHeight: "50px"
+                                }}
+                                readOnly
+                                value={JSON.stringify(finalFormData, movieFormService.replacer, 4)}
+                                onFocus={handleTextareaFocus}
+                            ></textarea>
+                        </div>
                     </div>
-                    <div className="col-sm-2"></div>
-                    <div className="col-sm-5" >
-                        <textarea readOnly value={JSON.stringify(finalFormData, movieFormService.replacer, 4)} cols="60" rows="25"></textarea>
-                    </div>
-                </div>
+                </Form>
             </Container>
 
         </div>
