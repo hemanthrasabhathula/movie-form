@@ -357,6 +357,7 @@ function MovieForm() {
                                 <Form.Label column sm="3" >Rating</Form.Label>
                                 <Col sm="3">
                                     <Form.Control
+                                        required
                                         type="number"
                                         name="rating"
                                         step='0.1'
