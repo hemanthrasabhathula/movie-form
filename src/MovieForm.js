@@ -152,11 +152,12 @@ function MovieForm() {
             // Select the text inside the textarea
             textareaRef.current.select();
             // Use the Clipboard API to copy the selected text to clipboard
-            navigator.clipboard.writeText(textareaRef.current.value).then(() => {
-                console.log('Text successfully copied to clipboard');
-            }).catch((err) => {
-                console.error('Failed to copy text: ', err);
-            });
+            
+            // navigator.clipboard.writeText(textareaRef.current.value).then(() => {
+            //     console.log('Text successfully copied to clipboard');
+            // }).catch((err) => {
+            //     console.error('Failed to copy text: ', err);
+            // });
         }
     };
 
