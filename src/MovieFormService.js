@@ -141,6 +141,17 @@ class MovieFormService {
                 return inputString; // If there is no '=', return the original string
             }
 
+        }else if(constants.PRIMEVIDEO_REGEX_2.test(inputString)){
+            const idRegex = "^amzn1.dv.gti";
+            const match = inputString.match(idRegex);
+            if(match){
+                return inputString;
+            }else{
+                console.log("Prime ID is not valid.");
+                return "Prime ID is not valid.";
+            }
+
+
         } else {
             console.log("URL is not valid.");
             return "URL is not valid.";

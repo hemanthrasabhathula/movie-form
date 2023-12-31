@@ -17,12 +17,14 @@ export const PRIMEVIDEO_REGEX = /primevideo\.com/;
 export const SONYLIV_REGEX = /sonyliv\.com/;
 export const SUNNXT_REGEX = /sunnxt\.com/;
 export const ZEE5_REGEX = /zee5\.com/;
+export const PRIMEVIDEO_REGEX_2 = /amzn1\.dv\.gti/;
 
 export const platformRegexMap = new Map([
     [AHA,AHA_REGEX],
     [HOTSTAR,HOTSTAR_REGEX],
     [NETFLIX,NETFLIX_REGEX],
     [PRIMEVIDEO,PRIMEVIDEO_REGEX],
+    [PRIMEVIDEO,PRIMEVIDEO_REGEX_2],
     [SONYLIV,SONYLIV_REGEX],
     [SUNNXT,SUNNXT_REGEX],
     [ZEE5,ZEE5_REGEX]
